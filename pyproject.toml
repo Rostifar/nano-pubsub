@@ -1,0 +1,9 @@
+[project]
+name = "nano-pubsub"
+version = "0.1.0"
+description = "A small pubsub framework for IPC."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pyaml>=25.1.0",
+]
