@@ -1,21 +1,29 @@
 import os
 import yaml
 
+from .utils import sync_create_dir 
 from .defs import DEF_ROOT
-from .stream import Stream
-
-_event_registry: dict[str, Stream] = {}
+from .stream import StreamInfo
 
 
-async def initialize(config_file: str) -> None:
-    global _event_registry, _root
+class _Hub:
+    event_registry: dict[str, StreamInfo]
 
-    with open(config_file, 'r') as f:
-        data = yaml.safe_load(f)
+    def __init__(self, config_file: str) -> None:
+        with open(config_file, 'r') as f:
+            data = yaml.safe_load(f)
 
-        root = data.get('root') if 'root' in data else DEF_ROOT
-        os.makedirs(root, exist_ok=True)
+            root = data.get('root') if 'root' in data else DEF_ROOT
+            sync_create_dir(root)            
 
-        _event_registry = {
-            stream: Stream(root, *stream) for stream in data['streams']
-        }
+            self.event_registry = {
+                stream['name']: StreamInfo(root, **stream) for stream in data['streams']
+            }
+
+
+__hub_instance: _Hub | None = None
+
+def initalize(config_file: str):
+    global __hub_instance
+    if not __hub_instance:
+        __hub_instance = _Hub(config_file)
