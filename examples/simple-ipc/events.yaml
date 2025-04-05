@@ -1,0 +1,4 @@
+
+root: /var/nano_pubsub/
+streams:
+  - name: items_processed
